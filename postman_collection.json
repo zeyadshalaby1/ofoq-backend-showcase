@@ -1,0 +1,2757 @@
+{
+	"info": {
+		"_postman_id": "ofoq-backend-api-v1",
+		"name": "🌌 Ofoq Backend API — V1",
+		"description": "# منصة أُفُق — Ofoq Platform\n\n**Enterprise-Grade Multi-Tenant SaaS Backend**\n\nمجموعة كاملة لجميع نقاط النهاية (+120 endpoint) لنظام أُفُق.\n\n## 🔐 Authentication\nالنظام يستخدم JWT Bearer Tokens مع 5 أنواع Guards:\n- `super_admin` — مدير النظام\n- `instructor` — المدرس/المالك\n- `tenant_teacher` — مدرس مساعد\n- `student` — الطالب\n- `user` — مستخدم عام\n\n## ⚙️ Setup\n1. ضع `base_url` في المتغيرات (مثلاً `http://localhost:3000`)\n2. سجل دخول من أي Guard\n3. التوكن يتم حفظه تلقائياً في المتغيرات\n\n---\n**Built by Zeyad Shalaby** | me@zeyadshalaby.cloud",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "super_admin_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "instructor_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "student_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "teacher_token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "🏥 Health Check",
+			"item": [
+				{
+					"name": "Ping",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/ping",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "ping"]
+						},
+						"description": "فحص حالة الخادم — يرجع `{\"message\": \"pong\"}`"
+					}
+				}
+			]
+		},
+		{
+			"name": "👑 Super Admin Auth",
+			"item": [
+				{
+					"name": "Register Super Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.token) {",
+									"    pm.collectionVariables.set('super_admin_token', jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Admin User\",\n    \"email\": \"admin@ofoq.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "Login Super Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.token) {",
+									"    pm.collectionVariables.set('super_admin_token', jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@ofoq.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Get Current Super Admin",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{super_admin_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/me",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "auth", "me"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "👨‍🏫 Instructor Auth & Dashboard",
+			"item": [
+				{
+					"name": "Register Instructor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.token) {",
+									"    pm.collectionVariables.set('instructor_token', jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Instructor User\",\n    \"email\": \"instructor@ofoq.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\",\n    \"phone\": \"01012345678\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/instructor/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "instructor", "register"]
+						}
+					}
+				},
+				{
+					"name": "Login Instructor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.token) {",
+									"    pm.collectionVariables.set('instructor_token', jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"instructor@ofoq.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/instructor/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "instructor", "login"]
+						}
+					}
+				},
+				{
+					"name": "Get Current Instructor (Me)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/instructor/me",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "instructor", "me"]
+						}
+					}
+				},
+				{
+					"name": "Dashboard WebSocket Connect",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/instructor/ws",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "instructor", "ws"]
+						},
+						"description": "WebSocket connection for real-time dashboard updates"
+					}
+				}
+			]
+		},
+		{
+			"name": "👩‍💻 Teacher Auth",
+			"item": [
+				{
+					"name": "Login Teacher",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.token) {",
+									"    pm.collectionVariables.set('teacher_token', jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"teacher@ofoq.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/teacher/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "teacher", "login"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🎓 Student Auth",
+			"item": [
+				{
+					"name": "Register Student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.token) {",
+									"    pm.collectionVariables.set('student_token', jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Student User\",\n    \"email\": \"student@ofoq.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\",\n    \"phone\": \"01098765432\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/student/register",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "student", "register"]
+						}
+					}
+				},
+				{
+					"name": "Login Student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.token) {",
+									"    pm.collectionVariables.set('student_token', jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"student@ofoq.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/student/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "student", "login"]
+						}
+					}
+				},
+				{
+					"name": "Get Current Student (Me)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{student_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/student/me",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "student", "me"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🏢 Tenant Management",
+			"item": [
+				{
+					"name": "List Tenants",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/tenants",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "tenants"]
+						}
+					}
+				},
+				{
+					"name": "Create Tenant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"أكاديمية أُفُق\",\n    \"slug\": \"ofoq-academy\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/tenants",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "tenants"]
+						}
+					}
+				},
+				{
+					"name": "Get Tenant Layout",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/tenants/layout",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "tenants", "layout"]
+						}
+					}
+				},
+				{
+					"name": "Store Tenant Layout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"primary_color\": \"#38bdf8\",\n    \"logo_url\": \"https://example.com/logo.png\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/tenants/layout",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "tenants", "layout"]
+						}
+					}
+				},
+				{
+					"name": "Update Tenant Layout",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"primary_color\": \"#6366f1\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/tenants/layout",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "tenants", "layout"]
+						}
+					}
+				},
+				{
+					"name": "Update App Status",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"is_active\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/tenants/layout/app-status",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "tenants", "layout", "app-status"]
+						}
+					}
+				},
+				{
+					"name": "Get Video Wallet Stats",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/tenants/video-wallet-stats",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "tenants", "video-wallet-stats"]
+						}
+					}
+				},
+				{
+					"name": "Recharge Video Wallet",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 100\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/tenants/video-wallet/recharge",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "tenants", "video-wallet", "recharge"]
+						}
+					}
+				},
+				{
+					"name": "Get Financial Agreement",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/tenants/financial-agreement",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "tenants", "financial-agreement"]
+						}
+					}
+				},
+				{
+					"name": "Update Financial Agreement",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"commission_rate\": 10\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/tenants/financial-agreement",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "tenants", "financial-agreement"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "👩‍💻 Teacher Management",
+			"item": [
+				{
+					"name": "List Teachers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/teachers",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "teachers"]
+						}
+					}
+				},
+				{
+					"name": "Create Teacher",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"مدرس جديد\",\n    \"email\": \"teacher@academy.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/teachers",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "teachers"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🎓 Educational Stages",
+			"item": [
+				{
+					"name": "List Stages",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/stages",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "stages"]
+						}
+					}
+				},
+				{
+					"name": "Create Stage",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"الصف الثالث الثانوي\",\n    \"slug\": \"3rd-secondary\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/stages",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "stages"]
+						}
+					}
+				},
+				{
+					"name": "Update Stage",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"الصف الثالث الثانوي - محدث\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/stages/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "stages", ":id"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Delete Stage",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/stages/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "stages", ":id"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "👨‍🎓 Student Management",
+			"item": [
+				{
+					"name": "List Students",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/students",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "students"]
+						}
+					}
+				},
+				{
+					"name": "Get Leaderboard",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/students/leaderboard",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "students", "leaderboard"]
+						}
+					}
+				},
+				{
+					"name": "Update Student",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"اسم الطالب المحدث\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/students/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "students", ":id"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Delete Student",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/students/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "students", ":id"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Get Student Progress",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/students/:id/progress",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "students", ":id", "progress"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "List Student Devices",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/students/devices",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "students", "devices"]
+						}
+					}
+				},
+				{
+					"name": "Delete Student Device",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/students/devices/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "students", "devices", ":id"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "☑️ Attendance System",
+			"item": [
+				{
+					"name": "Get Attendance Sessions (Instructor)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/attendance/sessions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "attendance", "sessions"]
+						}
+					}
+				},
+				{
+					"name": "Create Attendance Session",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"course_id\": 1,\n    \"title\": \"جلسة حضور - المحاضرة 5\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/attendance/sessions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "attendance", "sessions"]
+						}
+					}
+				},
+				{
+					"name": "Scan QR Code",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"session_id\": 1,\n    \"qr_code\": \"STUDENT_QR_DATA\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/attendance/sessions/scan",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "attendance", "sessions", "scan"]
+						}
+					}
+				},
+				{
+					"name": "Get Session Records",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/attendance/sessions/:id/records",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "attendance", "sessions", ":id", "records"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "My Attendance Records (Student)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{student_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/attendance/my-records",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "attendance", "my-records"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📄 Assignments",
+			"item": [
+				{
+					"name": "Create Assignment (Instructor)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"واجب الفصل الأول\",\n    \"description\": \"حل جميع تمارين الفصل\",\n    \"course_id\": 1,\n    \"due_date\": \"2026-05-01T23:59:59Z\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/assignments",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "assignments"]
+						}
+					}
+				},
+				{
+					"name": "List Assignments (Instructor)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/assignments",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "assignments"]
+						}
+					}
+				},
+				{
+					"name": "Get Submissions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/assignments/:id/submissions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "assignments", ":id", "submissions"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Grade Submission",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"grade\": 90,\n    \"feedback\": \"عمل ممتاز!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/assignments/submissions/:id/grade",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "assignments", "submissions", ":id", "grade"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Generate AI Feedback",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/assignments/submissions/:id/ai-feedback",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "assignments", "submissions", ":id", "ai-feedback"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Delete Assignment",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/assignments/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "assignments", ":id"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "My Assignments (Student)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{student_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/assignments/my",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "assignments", "my"]
+						}
+					}
+				},
+				{
+					"name": "Submit Assignment (Student)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{student_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"assignment_id\": 1,\n    \"content\": \"إجابة الواجب هنا...\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/assignments/submit",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "assignments", "submit"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📱 WhatsApp Management",
+			"item": [
+				{
+					"name": "Connect WhatsApp",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/whatsapp/connect",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "whatsapp", "connect"]
+						}
+					}
+				},
+				{
+					"name": "Get WhatsApp Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/whatsapp/status",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "whatsapp", "status"]
+						}
+					}
+				},
+				{
+					"name": "Disconnect WhatsApp",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/whatsapp/disconnect",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "whatsapp", "disconnect"]
+						}
+					}
+				},
+				{
+					"name": "WhatsApp Webhook (Incoming)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"event\": \"messages.upsert\",\n    \"data\": {}\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/webhooks/whatsapp",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "webhooks", "whatsapp"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "💰 Vouchers & Scratch Cards",
+			"item": [
+				{
+					"name": "Create Voucher Batch",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"count\": 50,\n    \"value\": 100,\n    \"label\": \"باقة 100 جنيه\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/vouchers/batch",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "vouchers", "batch"]
+						}
+					}
+				},
+				{
+					"name": "List Voucher Batches",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/vouchers/batches",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "vouchers", "batches"]
+						}
+					}
+				},
+				{
+					"name": "Show Batch Vouchers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/vouchers/batches/:id/vouchers",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "vouchers", "batches", ":id", "vouchers"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Charge Voucher (Student)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{student_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"VOUCHER_CODE_HERE\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/vouchers/charge",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "vouchers", "charge"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🏦 Payouts & Withdrawals",
+			"item": [
+				{
+					"name": "Request Payout (Instructor)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 500,\n    \"method\": \"bank_transfer\",\n    \"details\": \"بنك مصر - حساب 123456789\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/payouts/request",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "payouts", "request"]
+						}
+					}
+				},
+				{
+					"name": "List All Payouts (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{super_admin_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/payouts",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "payouts"]
+						}
+					}
+				},
+				{
+					"name": "Approve Payout (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{super_admin_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/payouts/:id/approve",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "payouts", ":id", "approve"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Reject Payout (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{super_admin_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/payouts/:id/reject",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "payouts", ":id", "reject"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📚 Courses System",
+			"item": [
+				{
+					"name": "List Courses",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/courses",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "courses"]
+						}
+					}
+				},
+				{
+					"name": "Show Course",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/courses/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "courses", ":id"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Create Course",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"كورس الرياضيات - الفصل الأول\",\n    \"description\": \"شرح شامل لمنهج الرياضيات\",\n    \"price\": 200,\n    \"stage_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/courses",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "courses"]
+						}
+					}
+				},
+				{
+					"name": "Update Course",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"كورس الرياضيات - محدث\",\n    \"price\": 250\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/courses/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "courses", ":id"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Delete Course",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/courses/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "courses", ":id"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Enroll Student",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{student_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"course_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/courses/enroll",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "courses", "enroll"]
+						}
+					}
+				},
+				{
+					"name": "Create Chapter",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"course_id\": 1,\n    \"title\": \"الفصل الأول: الأعداد\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/chapters",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "chapters"]
+						}
+					}
+				},
+				{
+					"name": "Update Chapter",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"الفصل الأول: الأعداد - محدث\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/chapters/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "chapters", ":id"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Delete Chapter",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/chapters/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "chapters", ":id"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Reorder Chapters",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"orders\": [\n        {\"id\": 1, \"order\": 0},\n        {\"id\": 2, \"order\": 1}\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/chapters/reorder",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "chapters", "reorder"]
+						}
+					}
+				},
+				{
+					"name": "Create Lesson",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"chapter_id\": 1,\n    \"title\": \"الدرس الأول: مقدمة\",\n    \"type\": \"video\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/lessons",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "lessons"]
+						}
+					}
+				},
+				{
+					"name": "Update Lesson",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"الدرس الأول - محدث\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/lessons/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "lessons", ":id"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Delete Lesson",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/lessons/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "lessons", ":id"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Reorder Lessons",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"orders\": [\n        {\"id\": 1, \"order\": 0},\n        {\"id\": 2, \"order\": 1}\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/lessons/reorder",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "lessons", "reorder"]
+						}
+					}
+				},
+				{
+					"name": "Track Lesson Progress (Student)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{student_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"lesson_id\": 1,\n    \"progress\": 100\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/lessons/progress",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "lessons", "progress"]
+						}
+					}
+				},
+				{
+					"name": "My Lesson Progress (Student)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{student_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/lessons/progress",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "lessons", "progress"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📝 Exams System",
+			"item": [
+				{
+					"name": "List Exams",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/exams",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "exams"]
+						}
+					}
+				},
+				{
+					"name": "Create Exam",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"امتحان منتصف الترم\",\n    \"course_id\": 1,\n    \"duration_minutes\": 60,\n    \"max_attempts\": 2,\n    \"pass_score\": 50\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/exams",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "exams"]
+						}
+					}
+				},
+				{
+					"name": "Show Exam",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/exams/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "exams", ":id"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Update Exam",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"امتحان منتصف الترم - محدث\",\n    \"duration_minutes\": 90\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/exams/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "exams", ":id"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Delete Exam",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/exams/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "exams", ":id"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Get Exam Results (Instructor)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/exams/:id/results",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "exams", ":id", "results"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "My Exam Attempts (Student)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{student_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/exams/attempts",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "exams", "attempts"]
+						}
+					}
+				},
+				{
+					"name": "Start Exam (Student)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{student_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"exam_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/exams/start",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "exams", "start"]
+						}
+					}
+				},
+				{
+					"name": "Answer Question (Student)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{student_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"attempt_id\": 1,\n    \"question_id\": 1,\n    \"answer\": \"A\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/exams/answer",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "exams", "answer"]
+						}
+					}
+				},
+				{
+					"name": "Submit Exam (Student)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{student_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"attempt_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/exams/submit",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "exams", "submit"]
+						}
+					}
+				},
+				{
+					"name": "Create Question",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"exam_id\": 1,\n    \"type\": \"multiple_choice\",\n    \"text\": \"ما ناتج 2+2؟\",\n    \"options\": [\"3\", \"4\", \"5\", \"6\"],\n    \"correct_answer\": \"4\",\n    \"points\": 5\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/exam-questions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "exam-questions"]
+						}
+					}
+				},
+				{
+					"name": "Update Question",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"text\": \"ما ناتج 3+3؟\",\n    \"correct_answer\": \"6\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/exam-questions/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "exam-questions", ":id"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Delete Question",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/exam-questions/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "exam-questions", ":id"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Bulk Create Questions",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"exam_id\": 1,\n    \"questions\": [\n        {\n            \"type\": \"multiple_choice\",\n            \"text\": \"سؤال 1\",\n            \"options\": [\"أ\", \"ب\", \"ج\", \"د\"],\n            \"correct_answer\": \"أ\",\n            \"points\": 5\n        },\n        {\n            \"type\": \"true_false\",\n            \"text\": \"سؤال 2\",\n            \"correct_answer\": \"true\",\n            \"points\": 3\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/exam-questions/bulk",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "exam-questions", "bulk"]
+						}
+					}
+				},
+				{
+					"name": "Reorder Questions",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"orders\": [\n        {\"id\": 1, \"order\": 0},\n        {\"id\": 2, \"order\": 1}\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/exam-questions/reorder",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "exam-questions", "reorder"]
+						}
+					}
+				},
+				{
+					"name": "Get Student Attempt Details (Instructor)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/exam-attempts/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "exam-attempts", ":id"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📅 Course Schedules",
+			"item": [
+				{
+					"name": "Get Schedule",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/schedules",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "schedules"]
+						}
+					}
+				},
+				{
+					"name": "Create Schedule",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"course_id\": 1,\n    \"day_of_week\": \"sunday\",\n    \"start_time\": \"14:00\",\n    \"end_time\": \"16:00\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/schedules",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "schedules"]
+						}
+					}
+				},
+				{
+					"name": "Update Schedule",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"start_time\": \"15:00\",\n    \"end_time\": \"17:00\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/schedules/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "schedules", ":id"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Delete Schedule",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/schedules/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "schedules", ":id"],
+							"variable": [{"key": "id", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Auto Generate Schedule",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"course_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/schedules/auto-generate",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "schedules", "auto-generate"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🎥 Video System",
+			"item": [
+				{
+					"name": "Upload Video",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{"key": "video", "type": "file", "src": ""},
+								{"key": "title", "value": "شرح الفصل الأول", "type": "text"},
+								{"key": "lesson_id", "value": "1", "type": "text"}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/videos/upload",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "videos", "upload"]
+						}
+					}
+				},
+				{
+					"name": "Get Video Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/videos/:video_id/status",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "videos", ":video_id", "status"],
+							"variable": [{"key": "video_id", "value": "VIDEO_UUID"}]
+						}
+					}
+				},
+				{
+					"name": "List Videos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/videos",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "videos"]
+						}
+					}
+				},
+				{
+					"name": "Delete Video",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/videos/:video_id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "videos", ":video_id"],
+							"variable": [{"key": "video_id", "value": "VIDEO_UUID"}]
+						}
+					}
+				},
+				{
+					"name": "Video SSE Stream",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/videos/:video_id/stream",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "videos", ":video_id", "stream"],
+							"variable": [{"key": "video_id", "value": "VIDEO_UUID"}]
+						},
+						"description": "Server-Sent Events stream for real-time video processing status"
+					}
+				}
+			]
+		},
+		{
+			"name": "🤖 AI System",
+			"item": [
+				{
+					"name": "📦 Admin — Packages & Wallets",
+					"item": [
+						{
+							"name": "Create AI Package (Admin)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{super_admin_token}}"},
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"باقة 1000 نقطة\",\n    \"points\": 1000,\n    \"price\": 50\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/ai/packages",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "ai", "packages"]
+								}
+							}
+						},
+						{
+							"name": "Update AI Package (Admin)",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{super_admin_token}}"},
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"باقة محدثة\",\n    \"price\": 75\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/ai/packages/:id",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "ai", "packages", ":id"],
+									"variable": [{"key": "id", "value": "1"}]
+								}
+							}
+						},
+						{
+							"name": "Delete AI Package (Admin)",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{super_admin_token}}"}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/ai/packages/:id",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "ai", "packages", ":id"],
+									"variable": [{"key": "id", "value": "1"}]
+								}
+							}
+						},
+						{
+							"name": "Admin Add Points",
+							"request": {
+								"method": "POST",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{super_admin_token}}"},
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"tenant_id\": 1,\n    \"points\": 500,\n    \"reason\": \"هدية ترحيبية\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/ai/admin/add-points",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "ai", "admin", "add-points"]
+								}
+							}
+						},
+						{
+							"name": "Admin Deduct Points",
+							"request": {
+								"method": "POST",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{super_admin_token}}"},
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"tenant_id\": 1,\n    \"points\": 100,\n    \"reason\": \"خصم إداري\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/ai/admin/deduct-points",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "ai", "admin", "deduct-points"]
+								}
+							}
+						},
+						{
+							"name": "Admin List All Wallets",
+							"request": {
+								"method": "GET",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{super_admin_token}}"}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/ai/admin/wallets",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "ai", "admin", "wallets"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "👨‍🏫 Tenant — Balance & Purchase",
+					"item": [
+						{
+							"name": "List AI Packages",
+							"request": {
+								"method": "GET",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/ai/packages",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "ai", "packages"]
+								}
+							}
+						},
+						{
+							"name": "Get AI Balance",
+							"request": {
+								"method": "GET",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/ai/balance",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "ai", "balance"]
+								}
+							}
+						},
+						{
+							"name": "List Available Packages",
+							"request": {
+								"method": "GET",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/ai/packages/available",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "ai", "packages", "available"]
+								}
+							}
+						},
+						{
+							"name": "Purchase AI Package",
+							"request": {
+								"method": "POST",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"package_id\": 1\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/ai/purchase",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "ai", "purchase"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "💬 AI Chat",
+					"item": [
+						{
+							"name": "Send AI Chat Message",
+							"request": {
+								"method": "POST",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"message\": \"اشرح لي مفهوم Clean Architecture\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/ai/chat",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "ai", "chat"]
+								}
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "💳 Payment Gateway System",
+			"item": [
+				{
+					"name": "📦 Admin — Gateway Management",
+					"item": [
+						{
+							"name": "List All Gateways (Admin)",
+							"request": {
+								"method": "GET",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{super_admin_token}}"}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/payments/gateways",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "payments", "gateways"]
+								}
+							}
+						},
+						{
+							"name": "Upsert Gateway (Admin)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{super_admin_token}}"},
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Paymob\",\n    \"slug\": \"paymob\",\n    \"is_active\": true\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/payments/gateways",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "payments", "gateways"]
+								}
+							}
+						},
+						{
+							"name": "Delete Gateway (Admin)",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{super_admin_token}}"}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/payments/gateways/:gateway_id",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "payments", "gateways", ":gateway_id"],
+									"variable": [{"key": "gateway_id", "value": "1"}]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "👨‍🏫 Tenant — Gateway Config",
+					"item": [
+						{
+							"name": "List Available Gateways",
+							"request": {
+								"method": "GET",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/payments/gateways/available",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "payments", "gateways", "available"]
+								}
+							}
+						},
+						{
+							"name": "Configure Tenant Gateway",
+							"request": {
+								"method": "POST",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"gateway_id\": 1,\n    \"api_key\": \"pk_live_xxx\",\n    \"secret_key\": \"sk_live_xxx\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/payments/tenant-gateways",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "payments", "tenant-gateways"]
+								}
+							}
+						},
+						{
+							"name": "List Tenant Gateways",
+							"request": {
+								"method": "GET",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/payments/tenant-gateways",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "payments", "tenant-gateways"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "🎓 Student — Payment",
+					"item": [
+						{
+							"name": "Initiate Payment",
+							"request": {
+								"method": "POST",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{student_token}}"},
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"gateway_id\": 1,\n    \"amount\": 200,\n    \"course_id\": 1\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/payments/initiate",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "payments", "initiate"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "🪝 Webhook",
+					"item": [
+						{
+							"name": "Payment Webhook",
+							"request": {
+								"method": "POST",
+								"header": [
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"transaction_id\": \"TXN_123\",\n    \"status\": \"success\",\n    \"amount\": 200\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/payments/webhook/:gateway_id/:tenant_id",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "payments", "webhook", ":gateway_id", ":tenant_id"],
+									"variable": [
+										{"key": "gateway_id", "value": "1"},
+										{"key": "tenant_id", "value": "1"}
+									]
+								}
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "📡 Live Sessions System",
+			"item": [
+				{
+					"name": "📦 Admin — Live Packages",
+					"item": [
+						{
+							"name": "List Live Packages (Admin)",
+							"request": {
+								"method": "GET",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{super_admin_token}}"}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/live/packages",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "live", "packages"]
+								}
+							}
+						},
+						{
+							"name": "Create Live Package (Admin)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{super_admin_token}}"},
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"باقة 100 دقيقة بث\",\n    \"minutes\": 100,\n    \"price\": 50\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/live/packages",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "live", "packages"]
+								}
+							}
+						},
+						{
+							"name": "Update Live Package (Admin)",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{super_admin_token}}"},
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"price\": 75\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/live/packages",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "live", "packages"]
+								}
+							}
+						},
+						{
+							"name": "Delete Live Package (Admin)",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{super_admin_token}}"}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/live/packages",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "live", "packages"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "👨‍🏫 Tenant — Live Wallet & Sessions",
+					"item": [
+						{
+							"name": "Get Live Wallet",
+							"request": {
+								"method": "GET",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/live/wallet",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "live", "wallet"]
+								}
+							}
+						},
+						{
+							"name": "Get Live Ledger",
+							"request": {
+								"method": "GET",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/live/ledger",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "live", "ledger"]
+								}
+							}
+						},
+						{
+							"name": "List Available Live Packages",
+							"request": {
+								"method": "GET",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/live/packages/available",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "live", "packages", "available"]
+								}
+							}
+						},
+						{
+							"name": "Buy Live Package",
+							"request": {
+								"method": "POST",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"package_id\": 1\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/live/buy-package",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "live", "buy-package"]
+								}
+							}
+						},
+						{
+							"name": "Store Live Session",
+							"request": {
+								"method": "POST",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"جلسة بث - الفصل الأول\",\n    \"lesson_id\": 1,\n    \"scheduled_at\": \"2026-05-01T14:00:00Z\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/live/store-session",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "live", "store-session"]
+								}
+							}
+						},
+						{
+							"name": "Get Session Stats",
+							"request": {
+								"method": "GET",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/live/session-stats",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "live", "session-stats"]
+								}
+							}
+						},
+						{
+							"name": "Deduct Session Minutes",
+							"request": {
+								"method": "POST",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"session_id\": 1,\n    \"minutes\": 30\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/live/deduct-minutes",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "live", "deduct-minutes"]
+								}
+							}
+						}
+					]
+				},
+				{
+					"name": "🎬 Engine — WebRTC Core",
+					"item": [
+						{
+							"name": "Start Live Session",
+							"request": {
+								"method": "POST",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"session_id\": 1\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/live/start",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "live", "start"]
+								}
+							}
+						},
+						{
+							"name": "Join Live Session (Student)",
+							"request": {
+								"method": "GET",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{student_token}}"}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/live/join/:session_id",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "live", "join", ":session_id"],
+									"variable": [{"key": "session_id", "value": "1"}]
+								}
+							}
+						},
+						{
+							"name": "End Live Session",
+							"request": {
+								"method": "POST",
+								"header": [
+									{"key": "Authorization", "value": "Bearer {{instructor_token}}"},
+									{"key": "Content-Type", "value": "application/json"}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"session_id\": 1\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/live/end",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "live", "end"]
+								}
+							}
+						},
+						{
+							"name": "WebSocket Signaling",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v1/live/ws/:session_id",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "live", "ws", ":session_id"],
+									"variable": [{"key": "session_id", "value": "1"}]
+								},
+								"description": "WebSocket endpoint for WebRTC signaling (SDP, ICE candidates)"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "📊 Analytics",
+			"item": [
+				{
+					"name": "Get Dashboard Summary",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/analytics/summary",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "analytics", "summary"]
+						}
+					}
+				},
+				{
+					"name": "Get Video Analytics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/analytics/video",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "analytics", "video"]
+						}
+					}
+				},
+				{
+					"name": "Get Advanced Reports",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{instructor_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/analytics/advanced-reports",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "analytics", "advanced-reports"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "⚙️ System Management (Admin)",
+			"item": [
+				{
+					"name": "List Configs",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{super_admin_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/configs",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "configs"]
+						}
+					}
+				},
+				{
+					"name": "Create Config",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{super_admin_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"key\": \"maintenance_mode\",\n    \"value\": \"false\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/configs",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "configs"]
+						}
+					}
+				},
+				{
+					"name": "Update Config",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{super_admin_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"key\": \"maintenance_mode\",\n    \"value\": \"true\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/configs",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "configs"]
+						}
+					}
+				},
+				{
+					"name": "List Audit Logs",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{super_admin_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/audit-logs",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "audit-logs"]
+						}
+					}
+				},
+				{
+					"name": "List Versions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/versions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "versions"]
+						}
+					}
+				},
+				{
+					"name": "Create Version",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{super_admin_token}}"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"version\": \"1.2.0\",\n    \"changelog\": \"إضافة نظام البث المباشر\",\n    \"is_required\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/versions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "versions"]
+						}
+					}
+				},
+				{
+					"name": "List System Errors",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{super_admin_token}}"}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/errors",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "errors"]
+						}
+					}
+				},
+				{
+					"name": "List Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/users",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "users"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🌐 Web Routes",
+			"item": [
+				{
+					"name": "Homepage / Log Index",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/",
+							"host": ["{{base_url}}"],
+							"path": [""]
+						}
+					}
+				},
+				{
+					"name": "Store Log",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"message\": \"Test log message\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/",
+							"host": ["{{base_url}}"],
+							"path": [""]
+						}
+					}
+				},
+				{
+					"name": "API Documentation",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/docs",
+							"host": ["{{base_url}}"],
+							"path": ["docs"]
+						}
+					}
+				}
+			]
+		}
+	]
+}
